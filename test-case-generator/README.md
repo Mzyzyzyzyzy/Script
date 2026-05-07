@@ -1,14 +1,15 @@
 # 📋 需求文档转测试用例生成器
 
-将 Word 格式的需求文档自动转换为专业的 Excel 测试用例表格。
+将 Word(.docx) 格式的需求文档自动转换为专业的 Excel 测试用例表格。
 
 ## ✨ 功能特性
 
 - 🔍 **智能解析** - 自动识别需求标题、描述、前置条件等信息
-- 🧪 **自动生成** - 为每个需求自动生成 3 类测试用例：
-  - ✅ 正常流程测试
-  - 🔲 边界值测试  
-  - ⚠️ 异常处理测试
+- 🧪 **自动生成** - 基于覆盖策略自动扩展测试用例，包含：
+  - ✅ 正向主流程与步骤覆盖
+  - 🔲 边界值与临界值覆盖
+  - ⚠️ 异常输入与容错处理
+  - 🧩 特殊场景（幂等、超时、并发、权限、兼容性等）
 - 📊 **专业格式** - 生成格式化的 Excel 表格，包含完整的测试信息
 - ⚙️ **开箱即用** - 无需复杂配置，一键转换
 - 🛡️ **错误处理** - 完善的异常处理机制
@@ -70,8 +71,8 @@ python requirements_to_testcases.py -h
 
 ### 文档支持的格式
 
-- ✅ .doc 文件
-- ✅ .docx 文件（推荐）
+- ✅ .docx 文件
+- ℹ️ .doc 文件建议先另存为 .docx 再使用
 
 ### 识别的关键词
 
@@ -96,8 +97,8 @@ python requirements_to_testcases.py -h
 | 前置条件 | 执行前提 |
 | 测试步骤 | 操作步骤 |
 | 预期结果 | 期望的结果 |
-| 优先级 | High/Medium |
-| 测试类型 | Functional/Boundary/Exception |
+| 优先级 | 高/中 |
+| 测试类型 | 功能测试/边界值测试/异常处理测试 |
 
 ### 样本输出
 
@@ -109,8 +110,8 @@ python requirements_to_testcases.py -h
 前置条件: 用户未登录，已注册账户
 测试步骤: 1.打开登录页面 2.输入用户名 3.输入密码 4.点击登录
 预期结果: 登录成功，跳转到首页
-优先级: High
-测试类型: Functional
+优先级: 高
+测试类型: 功能测试
 ```
 
 ## 💡 使用示例
@@ -133,9 +134,14 @@ python requirements_to_testcases.py requirements.docx -o test_cases_v1.xlsx
 ### 示例 3：批量处理
 
 ```bash
-# 处理多个需求文件
+# PowerShell (Windows)
+Get-ChildItem *.docx | ForEach-Object {
+  python requirements_to_testcases.py $_.FullName
+}
+
+# Bash (Linux/macOS)
 for file in *.docx; do
-    python requirements_to_testcases.py "$file"
+  python requirements_to_testcases.py "$file"
 done
 ```
 
@@ -184,20 +190,23 @@ app.run("requirements.docx", "test_cases.xlsx")
 
 ## 📋 生成的测试用例类型
 
-### 1. 正常流程测试 (Functional)
-- 优先级: High
-- 测试常见的使用场景
-- 验证功能在正常条件下的表现
+### 1. 基础覆盖
+- 正向主流程
+- 关键步骤逐步覆盖
 
-### 2. 边界值测试 (Boundary)
-- 优先级: Medium
-- 测试边界条件
-- 验证系统在极端情况下的处理
+### 2. 通用质量覆盖
+- 边界值（最小值/最大值/临界点）
+- 异常处理（必填缺失/非法格式/超范围/超时）
+- 特殊场景（重复提交幂等、会话超时恢复）
 
-### 3. 异常处理测试 (Exception)
-- 优先级: Medium
-- 测试异常场景
-- 验证系统的容错能力和错误提示
+### 3. 语义驱动专项覆盖（按需求内容自动追加）
+- 安全性测试（登录/认证相关）
+- 权限测试（角色/授权相关）
+- 并发测试（下单/库存/提交相关）
+- 稳定性测试（网络中断/重试相关）
+- 文件处理测试（上传/导出相关）
+- 兼容性测试（多端场景）
+- 查询专项（空结果与分页性能）
 
 ## ⚙️ 自定义配置
 
@@ -246,7 +255,7 @@ pip install python-docx openpyxl
 
 **解决方案：**
 - 检查文件路径是否正确
-- 确保文件格式是 .doc 或 .docx
+- 确保文件格式是 .docx
 - 检查文件是否被其他程序占用
 
 ### 问题 3: 未能识别到需求内容
@@ -286,7 +295,7 @@ GitHub: [@Mzyzyzyzyzy](https://github.com/Mzyzyzyzyzy)
 ## ❓ FAQ
 
 **Q: 是否支持其他格式的输入文件？**
-A: 目前只支持 .doc 和 .docx 格式。如需支持其他格式，欢迎提交 Issue。
+A: 目前只支持 .docx 格式。若是 .doc 文件，建议先转换为 .docx 后再处理。
 
 **Q: 生成的 Excel 可以修改吗？**
 A: 可以。生成的 Excel 是标准格式，可以用任何 Excel 软件打开和修改。
